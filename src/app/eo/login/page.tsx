@@ -1,6 +1,6 @@
 'use client'
 
-import { useState, useEffect } from 'react'
+import { useState, useEffect, Suspense } from 'react'
 import Image from 'next/image'
 import Link from 'next/link'
 import { useRouter, useSearchParams } from 'next/navigation'
@@ -19,7 +19,7 @@ const loginSchema = z.object({
 
 type LoginForm = z.infer<typeof loginSchema>
 
-export default function EoLoginPage() {
+function EoLoginFormContent() {
   const router = useRouter()
   const searchParams = useSearchParams()
   const [showPassword, setShowPassword] = useState(false)
@@ -85,19 +85,114 @@ export default function EoLoginPage() {
     }
   }
 
+  return (
+    <div className="max-w-md w-full mx-auto">
+      <div className="lg:hidden text-center mb-8">
+        <span className="text-xs tracking-widest uppercase text-text-muted">Jakarta Yoga Calendar</span>
+      </div>
 
+      <h2 className="text-3xl font-light text-text mb-2" style={{ fontFamily: 'var(--font-manrope)' }}>
+        Masuk ke Portal EO
+      </h2>
+      <p className="text-text-muted text-sm mb-8" style={{ fontFamily: 'var(--font-manrope)', fontWeight: 300 }}>
+        Belum punya akun?{' '}
+        <Link href="/eo/register" className="font-medium hover:underline" style={{ color: 'var(--color-primary-val)' }}>
+          Daftar sebagai EO
+        </Link>
+      </p>
+
+      {successMessage && (
+        <div className="mb-6 p-4 bg-green-50 border border-green-200 rounded-lg text-green-700 text-sm">
+          {successMessage}
+        </div>
+      )}
+
+      {error && (
+        <div className="mb-6 p-4 bg-red-50 border border-red-200 rounded-lg text-red-600 text-sm">
+          {error}
+        </div>
+      )}
+
+      <div className="relative mb-6">
+        <div className="absolute inset-0 flex items-center">
+          <div className="w-full border-t border-gray-200" />
+        </div>
+        <div className="relative flex justify-center text-xs text-text-muted bg-white px-4">
+          atau masuk dengan email
+        </div>
+      </div>
+
+      <form onSubmit={handleSubmit(onSubmit)} className="space-y-5">
+        <div>
+          <Label htmlFor="email" className="text-sm text-text mb-1 block">Email</Label>
+          <Input
+            id="email"
+            type="email"
+            placeholder="nama@email.com"
+            {...register('email')}
+            className="border-gray-200"
+            autoComplete="email"
+          />
+          {errors.email && <p className="text-red-500 text-xs mt-1">{errors.email.message}</p>}
+        </div>
+
+        <div>
+          <Label htmlFor="password" className="text-sm text-text mb-1 block">Password</Label>
+          <div className="relative">
+            <Input
+              id="password"
+              type={showPassword ? 'text' : 'password'}
+              placeholder="••••••••"
+              {...register('password')}
+              className="border-gray-200 pr-10"
+              autoComplete="current-password"
+            />
+            <button
+              type="button"
+              onClick={() => setShowPassword(!showPassword)}
+              className="absolute right-3 top-1/2 -translate-y-1/2 text-gray-400 hover:text-gray-600"
+            >
+              {showPassword ? <EyeOff size={16} /> : <Eye size={16} />}
+            </button>
+          </div>
+          {errors.password && <p className="text-red-500 text-xs mt-1">{errors.password.message}</p>}
+        </div>
+
+        <button
+          type="submit"
+          disabled={isLoading}
+          className="w-full py-3 text-white transition-opacity hover:opacity-90 disabled:opacity-60 flex items-center justify-center gap-2"
+          style={{
+            backgroundColor: 'var(--color-primary-val)',
+            fontFamily: 'var(--font-manrope)',
+            fontWeight: 500,
+            fontSize: '0.8rem',
+            letterSpacing: '0.05em',
+            borderRadius: '4px',
+          }}
+        >
+          {isLoading && <Loader2 size={16} className="animate-spin" />}
+          MASUK
+        </button>
+      </form>
+    </div>
+  )
+}
+
+export default function EoLoginPage() {
+  const router = useRouter()
 
   return (
     <div className="min-h-screen grid grid-cols-1 lg:grid-cols-[4fr_6fr] relative">
       {/* Back Button */}
-        <button
-          onClick={() => router.back()}
-          className="fixed top-6 left-6 z-50 flex items-center gap-2 text-white/80 hover:text-white transition-colors group"
-        >
-          <div className="w-10 h-10 rounded-full bg-white/20 backdrop-blur-sm border border-white/30 flex items-center justify-center group-hover:bg-white/30 transition-colors">
-            <ArrowLeft size={18} />
-          </div>
-        </button>
+      <button
+        onClick={() => router.back()}
+        className="fixed top-6 left-6 z-50 flex items-center gap-2 text-white/80 hover:text-white transition-colors group"
+      >
+        <div className="w-10 h-10 rounded-full bg-white/20 backdrop-blur-sm border border-white/30 flex items-center justify-center group-hover:bg-white/30 transition-colors">
+          <ArrowLeft size={18} />
+        </div>
+      </button>
 
       {/* Left Panel */}
       <div
@@ -134,97 +229,11 @@ export default function EoLoginPage() {
 
       {/* Right Panel */}
       <div className="flex items-center justify-center px-8 py-12 bg-white">
-        <div className="max-w-md w-full mx-auto">
-          <div className="lg:hidden text-center mb-8">
-            <span className="text-xs tracking-widest uppercase text-text-muted">Jakarta Yoga Calendar</span>
-          </div>
-
-          <h2 className="text-3xl font-light text-text mb-2" style={{ fontFamily: 'var(--font-manrope)' }}>
-            Masuk ke Portal EO
-          </h2>
-          <p className="text-text-muted text-sm mb-8" style={{ fontFamily: 'var(--font-manrope)', fontWeight: 300 }}>
-            Belum punya akun?{' '}
-            <Link href="/eo/register" className="font-medium hover:underline" style={{ color: 'var(--color-primary-val)' }}>
-              Daftar sebagai EO
-            </Link>
-          </p>
-
-          {successMessage && (
-            <div className="mb-6 p-4 bg-green-50 border border-green-200 rounded-lg text-green-700 text-sm">
-              {successMessage}
-            </div>
-          )}
-
-          {error && (
-            <div className="mb-6 p-4 bg-red-50 border border-red-200 rounded-lg text-red-600 text-sm">
-              {error}
-            </div>
-          )}
-
-          <div className="relative mb-6">
-            <div className="absolute inset-0 flex items-center">
-              <div className="w-full border-t border-gray-200" />
-            </div>
-            <div className="relative flex justify-center text-xs text-text-muted bg-white px-4">
-              atau masuk dengan email
-            </div>
-          </div>
-
-          <form onSubmit={handleSubmit(onSubmit)} className="space-y-5">
-            <div>
-              <Label htmlFor="email" className="text-sm text-text mb-1 block">Email</Label>
-              <Input
-                id="email"
-                type="email"
-                placeholder="nama@email.com"
-                {...register('email')}
-                className="border-gray-200"
-                autoComplete="email"
-              />
-              {errors.email && <p className="text-red-500 text-xs mt-1">{errors.email.message}</p>}
-            </div>
-
-            <div>
-              <Label htmlFor="password" className="text-sm text-text mb-1 block">Password</Label>
-              <div className="relative">
-                <Input
-                  id="password"
-                  type={showPassword ? 'text' : 'password'}
-                  placeholder="••••••••"
-                  {...register('password')}
-                  className="border-gray-200 pr-10"
-                  autoComplete="current-password"
-                />
-                <button
-                  type="button"
-                  onClick={() => setShowPassword(!showPassword)}
-                  className="absolute right-3 top-1/2 -translate-y-1/2 text-gray-400 hover:text-gray-600"
-                >
-                  {showPassword ? <EyeOff size={16} /> : <Eye size={16} />}
-                </button>
-              </div>
-              {errors.password && <p className="text-red-500 text-xs mt-1">{errors.password.message}</p>}
-            </div>
-
-            <button
-              type="submit"
-              disabled={isLoading}
-              className="w-full py-3 text-white transition-opacity hover:opacity-90 disabled:opacity-60 flex items-center justify-center gap-2"
-              style={{
-                backgroundColor: 'var(--color-primary-val)',
-                fontFamily: 'var(--font-manrope)',
-                fontWeight: 500,
-                fontSize: '0.8rem',
-                letterSpacing: '0.05em',
-                borderRadius: '4px',
-              }}
-            >
-              {isLoading && <Loader2 size={16} className="animate-spin" />}
-              MASUK
-            </button>
-          </form>
-        </div>
+        <Suspense fallback={<div className="flex justify-center"><Loader2 className="animate-spin text-gray-400" /></div>}>
+          <EoLoginFormContent />
+        </Suspense>
       </div>
     </div>
   )
 }
+
