@@ -1,0 +1,121 @@
+@import "tailwindcss";
+@import "tw-animate-css";
+
+@custom-variant dark (&:is(.dark *));
+
+@theme inline {
+  --color-background: var(--background);
+  --color-foreground: var(--foreground);
+  --font-sans: var(--font-manrope);
+  --font-display: var(--font-manrope);
+  --font-accent: var(--font-playfair);
+  --font-mono: var(--font-geist-mono);
+  
+  /* Brand Colors - Jakarta Yoga Calendar (Calmi Theme) */
+  --color-navbar: #FFFFFF;
+  --color-primary-val: #6198AD;
+  --color-primary-light: #7EAFC2;
+  --color-primary-dark: #447488;
+  --color-primary-bg: #EFF5F8;
+  --color-bg: #FFFFFF;
+  --color-bg-cream: #FFFFFF;
+  --color-bg-light: #F0F5F7;
+  --color-secondary-cream: #F3E4D3;
+  --color-dark: #181818;
+  --color-dark-secondary: #2C2C2C;
+  --color-text: #585858;
+  --color-text-muted: #8E8E8E;
+  --color-text-light: #B5B5B5;
+  --color-watermark: rgba(255, 255, 255, 0.03);
+  --color-cta: #6198AD;
+
+  --color-primary: var(--color-primary-val);
+  --color-ring: var(--ring);
+  --color-input: var(--input);
+  --color-border: var(--border);
+  --color-destructive: var(--destructive);
+  --color-accent-foreground: var(--accent-foreground);
+  --color-accent: var(--accent);
+  --color-muted-foreground: var(--muted-foreground);
+  --color-muted: var(--muted);
+  --color-secondary-foreground: var(--secondary-foreground);
+  --color-secondary: var(--secondary);
+  --color-primary-foreground: var(--primary-foreground);
+  --color-popover-foreground: var(--popover-foreground);
+  --color-popover: var(--popover);
+  --color-card-foreground: var(--card-foreground);
+  --color-card: var(--card);
+  --radius-sm: calc(var(--radius) * 0.6);
+  --radius-md: calc(var(--radius) * 0.8);
+  --radius-lg: var(--radius);
+  --radius-xl: calc(var(--radius) * 1.4);
+  --radius-2xl: calc(var(--radius) * 1.8);
+  --radius-3xl: calc(var(--radius) * 2.2);
+  --radius-4xl: calc(var(--radius) * 2.6);
+}
+
+:root {
+  /* Shadcn defaults */
+  --background: #FFFFFF;
+  --foreground: #181818;
+  --primary: #6198AD;
+  --primary-foreground: #FFFFFF;
+  --card: #FFFFFF;
+  --card-foreground: #181818;
+  --popover: #FFFFFF;
+  --popover-foreground: #181818;
+  --secondary: #F3E4D3;
+  --secondary-foreground: #181818;
+  --muted: #EFF5F8;
+  --muted-foreground: #8E8E8E;
+  --accent: #EFF5F8;
+  --accent-foreground: #181818;
+  --destructive: #EF4444;
+  --border: #E2E8F0;
+  --input: #F0F5F7;
+  --ring: #6198AD;
+  --radius: 5px;
+}
+
+@layer base {
+  * {
+    @apply border-border outline-ring/50;
+  }
+  body {
+    font-family: var(--font-sans), sans-serif;
+    font-weight: 400;
+    color: var(--color-text);
+    background-color: var(--color-navbar);
+  }
+  html {
+    scroll-behavior: smooth;
+  }
+}
+
+/* Marquee Animation */
+@keyframes marquee {
+  0% {
+    transform: translateX(0);
+  }
+  100% {
+    transform: translateX(-50%);
+  }
+}
+
+.animate-marquee {
+  animation: marquee 30s linear infinite;
+}
+
+/* Scrollbar Hide Utility */
+.scrollbar-hide {
+  -ms-overflow-style: none;  /* IE and Edge */
+  scrollbar-width: none;      /* Firefox */
+}
+.scrollbar-hide::-webkit-scrollbar {
+  display: none;              /* Chrome, Safari, Opera */
+}
+
+/* Container override */
+.container {
+  max-width: 1280px;
+}
