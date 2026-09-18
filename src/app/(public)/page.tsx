@@ -17,8 +17,8 @@ import { Event } from "@/lib/data/events";
 
 // Mapper untuk mengubah data relasional Supabase menjadi format UI Event
 function mapDbEventToEvent(dbEvent: any): Event {
-  const primaryImage = dbEvent.event_images?.find((img: any) => img.order_index === 0)?.url 
-    || dbEvent.event_images?.[0]?.url 
+  const primaryImage = dbEvent.event_images?.find((img: any) => img.order_index === 0)?.url
+    || dbEvent.event_images?.[0]?.url
     || "https://images.unsplash.com/photo-1544367567-0f2fcb009e0b?w=800&q=80";
 
   const prices = dbEvent.ticket_types?.map((t: any) => Number(t.price)) || [];
@@ -76,9 +76,9 @@ export default async function HomePage() {
 
   const mappedHero: Event[] = heroAds
     ? heroAds
-        .map((ad: any) => ad.events)
-        .filter(Boolean)
-        .map(mapDbEventToEvent)
+      .map((ad: any) => ad.events)
+      .filter(Boolean)
+      .map(mapDbEventToEvent)
     : [];
 
   // 2. Fetch Iklan Featured ("Event Pilihan Minggu Ini") yang Aktif
@@ -100,9 +100,9 @@ export default async function HomePage() {
 
   const mappedFeatured: Event[] = featuredAds
     ? featuredAds
-        .map((ad: any) => ad.events)
-        .filter(Boolean)
-        .map(mapDbEventToEvent)
+      .map((ad: any) => ad.events)
+      .filter(Boolean)
+      .map(mapDbEventToEvent)
     : [];
 
   // 3. Fetch Event Kurasi Kalender Harian
@@ -120,11 +120,11 @@ export default async function HomePage() {
 
   const mappedCalendar = calendarDbEvents
     ? calendarDbEvents
-        .filter((ce: any) => ce.events)
-        .map((ce: any) => ({
-          displayDate: ce.display_date,
-          event: mapDbEventToEvent(ce.events)
-        }))
+      .filter((ce: any) => ce.events)
+      .map((ce: any) => ({
+        displayDate: ce.display_date,
+        event: mapDbEventToEvent(ce.events)
+      }))
     : [];
 
   // 4. Fetch Event Terpopuler
@@ -141,13 +141,13 @@ export default async function HomePage() {
 
   const mappedPopular: Event[] = popularDbEvents
     ? popularDbEvents
-        .map(mapDbEventToEvent)
-        .sort((a, b) => {
-          const soldA = a.quota - a.remaining;
-          const soldB = b.quota - b.remaining;
-          return soldB - soldA;
-        })
-        .slice(0, 6)
+      .map(mapDbEventToEvent)
+      .sort((a, b) => {
+        const soldA = a.quota - a.remaining;
+        const soldB = b.quota - b.remaining;
+        return soldB - soldA;
+      })
+      .slice(0, 6)
     : [];
 
   // 5. Fetch Event Terbaru yang sudah Approved
@@ -168,13 +168,32 @@ export default async function HomePage() {
     ? latestDbEvents.map(mapDbEventToEvent)
     : [];
 
+  // 6. Fetch Artikel (Bacaan Seru) dari Database
+  const { data: dbArticles } = await supabase
+    .from('articles')
+    .select('*')
+    .order('created_at', { ascending: false })
+    .limit(4);
+
+  const mappedArticles = dbArticles
+    ? dbArticles.map((art) => ({
+        id: art.id,
+        title: art.title,
+        slug: art.slug,
+        image: art.image_url,
+        category: art.category,
+        date: new Date(art.created_at).toLocaleDateString('id-ID', {
+          day: 'numeric',
+          month: 'short',
+          year: 'numeric',
+        }),
+      }))
+    : undefined;
+
   return (
     <>
       {/* 1. Hero Banner Slider — tetap seperti desain existing, dengan autoslide */}
       <HeroBanner initialHeroEvents={mappedHero} />
-
-      {/* 2. Kategori Navigasi — pill horizontal scroll */}
-      <CategoriesSection />
 
       {/* 3. "Event Baru Untukmu" — horizontal scroll cards */}
       <LatestEvents initialEvents={mappedLatest} />
@@ -182,31 +201,33 @@ export default async function HomePage() {
       {/* 4. "Calendario Interaktif" — menampilkan kalender dengan event harian */}
       <InteractiveCalendar events={mappedCalendar} />
 
-      {/* 4. "Lagi Trending" — dark horizontal scroll cards */}
+      {/* 5. "Lagi Trending" — dark horizontal scroll cards */}
       <PopularEvents initialEvents={mappedPopular} />
 
-      {/* 5. Event2Go (Featured Split Layout) — replaces InteractiveCalendar */}
+      {/* 6. Event2Go (Featured Split Layout) — replaces InteractiveCalendar */}
       <EventToGoSection events={mappedCalendar} />
 
-      {/* 6. "Event Minggu Ini" / Featured — masonry or wide cards */}
+      {/* 7. "Event Minggu Ini" / Featured — masonry or wide cards */}
       <FeaturedEvents initialEvents={mappedFeatured} />
 
-      {/* 7. Promo Banner — wide banner à la Loket */}
+      {/* 8. Promo Banner — wide banner à la Loket */}
       <PromoBanner />
 
-      {/* 8. YOGA Screen — vertical poster section */}
+      {/* 9. YOGA Screen — vertical poster section */}
       <ScreenSection />
+      {/* 2. Kategori Navigasi — pill horizontal scroll */}
+      <CategoriesSection />
 
-      {/* 9. "Siap Seru-seruan?" — partner venue cards */}
+      {/* 10. "Siap Seru-seruan?" — partner venue cards */}
       <BrandsSection />
 
-      {/* 10. "Jelajahi Event di Kotamu" — city cards */}
+      {/* 11. "Jelajahi Event di Kotamu" — city cards */}
       <CityExplore />
 
-      {/* 11. "Bacaan Seru!" — blog/article cards */}
-      <BlogSection />
+      {/* 12. "Bacaan Seru!" — blog/article cards (CRUD dari Admin) */}
+      <BlogSection initialArticles={mappedArticles} />
 
-      {/* 12. Statistik Platform */}
+      {/* 13. Statistik Platform */}
       <StatsSection />
     </>
   );

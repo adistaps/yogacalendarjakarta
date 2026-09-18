@@ -10,7 +10,7 @@ interface EventMasonryGridProps {
 
 export default function EventMasonryGrid({ events }: EventMasonryGridProps) {
   return (
-    <div className="columns-1 md:columns-2 lg:columns-3 gap-4">
+    <div className="grid grid-cols-1 sm:grid-cols-2 md:grid-cols-3 lg:grid-cols-4 gap-6">
       <AnimatePresence>
         {events.map((event, index) => (
           <motion.div
@@ -20,11 +20,12 @@ export default function EventMasonryGrid({ events }: EventMasonryGridProps) {
             exit={{ opacity: 0, y: -20 }}
             transition={{ duration: 0.3, delay: index * 0.05 }}
           >
-            <EventCard event={event} index={index} />
+            <EventCard event={event} />
           </motion.div>
         ))}
       </AnimatePresence>
     </div>
   );
 }
+
 

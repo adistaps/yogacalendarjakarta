@@ -1,11 +1,10 @@
 "use client";
 
-import Image from "next/image";
-import Link from "next/link";
 import { useRouter, useSearchParams } from "next/navigation";
 import { useState, useTransition } from "react";
-import { Search, MapPin, Calendar, ArrowRight } from "lucide-react";
+import { Search, MapPin, Calendar } from "lucide-react";
 import { Event } from "@/lib/data/events";
+import EventCard from "@/components/public/events/EventCard";
 
 const categories = ["Semua", "Vinyasa", "Kundalini", "Ashtanga", "Restorative", "Retreat", "Sound Healing"];
 
@@ -190,70 +189,9 @@ export default function EventsListClient({ initialEvents }: EventsListClientProp
               </p>
             </div>
           ) : (
-            <div className="columns-1 md:columns-2 lg:columns-3 gap-6 space-y-6">
+            <div className="grid grid-cols-1 sm:grid-cols-2 md:grid-cols-3 lg:grid-cols-4 gap-6">
               {initialEvents.map((event, idx) => (
-                <div key={event.id} className="break-inside-avoid">
-                  <Link
-                    href={`/events/${event.slug}`}
-                    className="group block relative overflow-hidden rounded-2xl border border-black/5 shadow-sm transition-all duration-300"
-                  >
-                    <Image
-                      src={event.image}
-                      alt={event.title}
-                      width={800}
-                      height={idx % 2 === 0 ? 900 : 750}
-                      className="w-full h-auto object-cover transition-transform duration-700 group-hover:scale-105"
-                    />
-
-                    {/* Gradient Overlay */}
-                    <div className="absolute inset-0 bg-gradient-to-t from-black/90 via-black/30 to-transparent opacity-80 group-hover:opacity-100 transition-opacity duration-300"></div>
-
-                    {/* Content Overlay */}
-                    <div className="absolute bottom-0 left-0 right-0 p-8 flex flex-col justify-end translate-y-4 group-hover:translate-y-0 transition-transform duration-500">
-                      <span className="text-white/60 text-[10px] font-bold tracking-widest uppercase mb-2">
-                        {event.organizer}
-                      </span>
-                      <h3
-                        className="text-white mb-4"
-                        style={{
-                          fontFamily: "var(--font-manrope)",
-                          fontSize: "1.6rem",
-                          fontWeight: 400,
-                          lineHeight: 1.2,
-                        }}
-                      >
-                        {event.title}
-                      </h3>
-
-                      {/* Hover Info */}
-                      <div className="flex flex-col gap-2 text-white/70 text-[11px] font-medium opacity-0 group-hover:opacity-100 transition-opacity duration-500 delay-100">
-                        <div className="flex items-center gap-2">
-                          <MapPin size={12} className="text-primary-val" />
-                          <span>{event.location}</span>
-                        </div>
-                        <div className="flex items-center gap-2">
-                          <Calendar size={12} className="text-primary-val" />
-                          <span>
-                            {new Date(event.date).toLocaleDateString("id-ID", {
-                              weekday: "long",
-                              day: "numeric",
-                              month: "short",
-                              year: "numeric",
-                            })}
-                          </span>
-                        </div>
-                        <div className="mt-4 flex items-center justify-between border-t border-white/10 pt-4">
-                          <span className="text-white font-bold text-sm">
-                            {event.price > 0 ? `Rp ${event.price.toLocaleString("id-ID")}` : "Gratis"}
-                          </span>
-                          <span className="inline-flex items-center text-xs font-bold text-primary-val gap-1">
-                            Beli Tiket <ArrowRight size={12} />
-                          </span>
-                        </div>
-                      </div>
-                    </div>
-                  </Link>
-                </div>
+                <EventCard key={event.id} event={event} index={idx} />
               ))}
             </div>
           )}

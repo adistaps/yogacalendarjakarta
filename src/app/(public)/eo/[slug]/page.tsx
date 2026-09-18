@@ -1,10 +1,11 @@
 import Image from "next/image";
 import Link from "next/link";
 import { notFound } from "next/navigation";
-import { MapPin, MessageCircle, Calendar, ArrowRight } from "lucide-react";
+import { MapPin, MessageCircle, Calendar } from "lucide-react";
 import { createClient } from "@/lib/supabase/server";
 import { organizers as mockOrganizers } from "@/lib/data/organizers";
 import { events as mockEvents, Event } from "@/lib/data/events";
+import EventCard from "@/components/public/events/EventCard";
 import type { Metadata } from "next";
 
 interface PageProps {
@@ -220,64 +221,9 @@ export default async function EOProfilePage({ params }: PageProps) {
               </p>
             </div>
           ) : (
-            <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6">
+            <div className="grid grid-cols-1 sm:grid-cols-2 md:grid-cols-3 gap-6">
               {eo.events.map((event, idx) => (
-                <Link
-                  key={event.id}
-                  href={`/events/${event.slug}`}
-                  className="group block relative overflow-hidden rounded-2xl border border-black/5 shadow-sm transition-all duration-300 bg-white aspect-[4/5]"
-                >
-                  <Image
-                    src={event.image}
-                    alt={event.title}
-                    fill
-                    className="object-cover transition-transform duration-700 group-hover:scale-105"
-                  />
-                  {/* Gradient Overlay */}
-                  <div className="absolute inset-0 bg-gradient-to-t from-black/90 via-black/30 to-transparent opacity-85 group-hover:opacity-100 transition-opacity duration-300"></div>
-
-                  {/* Content */}
-                  <div className="absolute bottom-0 left-0 right-0 p-8 flex flex-col justify-end translate-y-4 group-hover:translate-y-0 transition-transform duration-500">
-                    <h3
-                      className="text-white mb-4"
-                      style={{
-                        fontFamily: "var(--font-manrope)",
-                        fontSize: "1.5rem",
-                        fontWeight: 400,
-                        lineHeight: 1.2,
-                      }}
-                    >
-                      {event.title}
-                    </h3>
-
-                    {/* Details on Hover */}
-                    <div className="flex flex-col gap-2 text-white/70 text-[11px] font-medium opacity-0 group-hover:opacity-100 transition-opacity duration-500 delay-100">
-                      <div className="flex items-center gap-2">
-                        <MapPin size={12} className="text-primary-val" />
-                        <span>{event.location}</span>
-                      </div>
-                      <div className="flex items-center gap-2">
-                        <Calendar size={12} className="text-primary-val" />
-                        <span>
-                          {new Date(event.date).toLocaleDateString("id-ID", {
-                            weekday: "short",
-                            day: "numeric",
-                            month: "short",
-                            year: "numeric",
-                          })}
-                        </span>
-                      </div>
-                      <div className="mt-4 flex items-center justify-between border-t border-white/10 pt-4">
-                        <span className="text-white font-bold text-sm">
-                          {event.price > 0 ? `Rp ${event.price.toLocaleString("id-ID")}` : "Gratis"}
-                        </span>
-                        <span className="inline-flex items-center text-xs font-bold text-primary-val gap-1">
-                          Lihat Detail <ArrowRight size={12} />
-                        </span>
-                      </div>
-                    </div>
-                  </div>
-                </Link>
+                <EventCard key={event.id} event={event} index={idx} />
               ))}
             </div>
           )}

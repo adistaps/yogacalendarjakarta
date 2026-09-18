@@ -7,73 +7,87 @@ import type { Event } from "@/lib/data/events";
 
 interface EventCardProps {
   event: Event;
-  index: number;
+  index?: number;
+  className?: string;
+  aspectRatio?: string;
 }
 
-export default function EventCard({ event, index }: EventCardProps) {
-  const aspectRatio = index % 3 === 0 ? "aspect-[3/4]" : "aspect-square";
+function getAreaFromLocation(location: string, category?: string): string {
+  if (location && location.includes(",")) {
+    const parts = location.split(",");
+    const area = parts[parts.length - 1].trim();
+    if (area) return area;
+  }
+  if (location) return location;
+  if (category) return category;
+  return "Jakarta";
+}
+
+export default function EventCard({
+  event,
+  className = "",
+  aspectRatio = "aspect-[16/9]",
+}: EventCardProps) {
+  const area = getAreaFromLocation(event.location, event.category);
+  const organizerText = event.organizer?.startsWith("Oleh ")
+    ? event.organizer
+    : `Oleh ${event.organizer || "Organizer"}`;
+  const priceText =
+    event.price === 0 ? "Gratis" : `Rp${event.price.toLocaleString("id-ID")}`;
 
   return (
     <motion.div
-      whileHover={{ scale: 1.03 }}
-      transition={{ duration: 0.3 }}
-      className="break-inside-avoid mb-4"
+      whileHover={{ y: -4 }}
+      transition={{ duration: 0.2 }}
+      className={`group block w-full bg-white text-left ${className}`}
     >
-      <Link href={`/events/${event.slug}`} className="block relative overflow-hidden rounded-lg cursor-pointer group">
-        <div className={`relative ${aspectRatio}`}>
+      <Link href={`/events/${event.slug}`} className="block">
+        {/* Banner Image with Rounded Corners */}
+        <div className={`relative w-full ${aspectRatio} overflow-hidden rounded-xl md:rounded-2xl bg-gray-100 mb-3`}>
           <Image
             src={event.image}
             alt={event.title}
             fill
-            className="object-cover"
+            className="object-cover group-hover:scale-105 transition-transform duration-500"
           />
-          {/* Overlay */}
-          <div className="absolute inset-0 bg-gradient-to-t from-black/80 via-black/20 to-transparent" />
+        </div>
 
-          {/* Badge kategori */}
-          <span
-            className="absolute top-3 left-3 text-white text-xs px-2 py-1 rounded-sm"
-            style={{ backgroundColor: "var(--color-primary-val)" }}
-          >
-            {event.category}
+        {/* Event Details */}
+        <div className="flex flex-col">
+          {/* Location Area */}
+          <span className="text-xs text-gray-500 font-normal line-clamp-1">
+            {area}
           </span>
 
-          {/* Badge tanggal */}
-          <span className="absolute top-3 right-3 bg-white/90 text-xs px-2 py-1 rounded-sm"
-            style={{
-              color: "var(--color-text)",
-              fontFamily: "var(--font-manrope)",
-              fontSize: "0.7rem",
-            }}
+          {/* Title */}
+          <h3
+            className="font-bold text-gray-900 text-sm md:text-base leading-snug line-clamp-1 group-hover:text-primary-val transition-colors mt-0.5"
+            style={{ fontFamily: "var(--font-manrope)" }}
           >
-            {new Date(event.date).toLocaleDateString("id-ID", {
-              day: "numeric",
-              month: "short",
-            })}
+            {event.title}
+          </h3>
+
+          {/* Organizer */}
+          <p className="text-xs text-gray-500 mt-1 line-clamp-1">
+            {organizerText}
+          </p>
+
+          {/* Dotted / Dashed Separator */}
+          <div className="my-2.5 border-b border-dashed border-gray-200" />
+
+          {/* Price Label */}
+          <span className="text-[11px] md:text-xs text-gray-400 font-normal">
+            Mulai dari
           </span>
 
-          {/* Konten bawah */}
-          <div className="absolute bottom-0 left-0 right-0 p-4">
-            <p
-              className="text-white/60 text-xs uppercase tracking-wide"
-              style={{ fontFamily: "var(--font-manrope)" }}
-            >
-              {event.organizer}
-            </p>
-            <h3
-              className="text-white leading-tight mt-1"
-              style={{
-                fontFamily: "var(--font-manrope)",
-                fontWeight: 500,
-                fontSize: "1.25rem",
-              }}
-            >
-              {event.title}
-            </h3>
-          </div>
+          {/* Price */}
+          <span className="font-bold text-gray-900 text-sm md:text-base mt-0.5">
+            {priceText}
+          </span>
         </div>
       </Link>
     </motion.div>
   );
 }
+
 

@@ -558,6 +558,42 @@ export interface Database {
           }
         ]
       }
+      articles: {
+        Row: {
+          id: string
+          title: string
+          slug: string
+          category: string
+          content: string
+          image_url: string
+          author_name: string | null
+          created_at: string
+          updated_at: string
+        }
+        Insert: {
+          id?: string
+          title: string
+          slug: string
+          category?: string
+          content: string
+          image_url: string
+          author_name?: string | null
+          created_at?: string
+          updated_at?: string
+        }
+        Update: {
+          id?: string
+          title?: string
+          slug?: string
+          category?: string
+          content?: string
+          image_url?: string
+          author_name?: string | null
+          created_at?: string
+          updated_at?: string
+        }
+        Relationships: []
+      }
     }
     Views: {
       [_ in never]: never

@@ -1,10 +1,10 @@
 "use client";
 
 import Link from "next/link";
-import Image from "next/image";
 import { motion } from "framer-motion";
 import { ArrowRight } from "lucide-react";
 import { events, Event } from "@/lib/data/events";
+import EventCard from "@/components/public/events/EventCard";
 
 interface FeaturedEventsProps {
   initialEvents?: Event[];
@@ -58,55 +58,17 @@ export default function FeaturedEvents({ initialEvents }: FeaturedEventsProps) {
           </motion.div>
         </div>
 
-        {/* Masonry Grid */}
-        <div className="columns-1 md:columns-2 lg:columns-3 gap-6 space-y-6">
+        {/* Event Cards Grid */}
+        <div className="grid grid-cols-1 sm:grid-cols-2 md:grid-cols-3 lg:grid-cols-4 gap-6">
           {featuredEvents.map((event, idx) => (
             <motion.div
               key={event.id}
-              initial={{ opacity: 0, y: 40 }}
+              initial={{ opacity: 0, y: 30 }}
               whileInView={{ opacity: 1, y: 0 }}
               viewport={{ once: true }}
-              transition={{ duration: 0.7, delay: idx * 0.08 }}
-              className="break-inside-avoid"
+              transition={{ duration: 0.5, delay: idx * 0.05 }}
             >
-              <Link
-                href={`/events/${event.slug}`}
-                className="group block relative overflow-hidden rounded-xl"
-              >
-                <Image
-                  src={event.image}
-                  alt={event.title}
-                  width={800}
-                  height={idx % 2 === 0 ? 1000 : 800}
-                  className="w-full h-auto object-cover transition-transform duration-700 group-hover:scale-105"
-                />
-
-                {/* Gradient Overlay */}
-                <div className="absolute inset-0 bg-gradient-to-t from-black/80 via-black/20 to-transparent opacity-80 group-hover:opacity-100 transition-opacity duration-300"></div>
-
-                {/* Content overlay */}
-                <div className="absolute bottom-0 left-0 right-0 p-8 flex flex-col justify-end translate-y-4 group-hover:translate-y-0 transition-transform duration-500">
-                  <h3
-                    className="text-white mb-2"
-                    style={{
-                      fontFamily: "var(--font-manrope)",
-                      fontSize: "1.75rem",
-                      fontWeight: 400,
-                      lineHeight: 1.2,
-                    }}
-                  >
-                    {event.title}
-                  </h3>
-                  <div
-                    className="flex items-center gap-2 text-white/70 uppercase tracking-widest text-[0.65rem] opacity-0 group-hover:opacity-100 transition-opacity duration-500 delay-100"
-                    style={{ fontFamily: "var(--font-manrope)", fontWeight: 500 }}
-                  >
-                    <span>{event.category}</span>
-                    <span className="italic normal-case">//</span>
-                    <span>{event.location}</span>
-                  </div>
-                </div>
-              </Link>
+              <EventCard event={event} index={idx} />
             </motion.div>
           ))}
         </div>

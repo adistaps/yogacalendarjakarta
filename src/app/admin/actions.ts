@@ -407,3 +407,104 @@ export async function recordDisbursementAction(
   }
 }
 
+/**
+ * Article CRUD Server Actions
+ */
+export async function createArticleAction(formData: {
+  title: string
+  category: string
+  content: string
+  image_url: string
+}): Promise<ActionState> {
+  try {
+    await verifyAdminAuth()
+    const supabase = await createClient()
+
+    if (!formData.title.trim() || !formData.content.trim()) {
+      return { success: false, error: 'Judul dan isi artikel tidak boleh kosong.' }
+    }
+
+    // Auto-generate slug
+    const slug = formData.title
+      .toLowerCase()
+      .trim()
+      .replace(/[^\w\s-]/g, '')
+      .replace(/[\s_-]+/g, '-')
+      .replace(/^-+|-+$/g, '')
+
+    const { error } = await supabase.from('articles').insert({
+      title: formData.title,
+      slug: slug || `article-${Date.now()}`,
+      category: formData.category || 'General',
+      content: formData.content,
+      image_url: formData.image_url || 'https://images.unsplash.com/photo-1544367567-0f2fcb009e0b?w=600&q=80',
+    })
+
+    if (error) throw error
+
+    revalidatePath('/articles')
+    revalidatePath('/')
+    return { success: true }
+  } catch (err: unknown) {
+    console.error('createArticleAction error:', err)
+    return { success: false, error: err instanceof Error ? err.message : 'Gagal membuat artikel' }
+  }
+}
+
+export async function updateArticleAction(
+  articleId: string,
+  formData: {
+    title: string
+    category: string
+    content: string
+    image_url: string
+  }
+): Promise<ActionState> {
+  try {
+    await verifyAdminAuth()
+    const supabase = await createClient()
+
+    if (!formData.title.trim() || !formData.content.trim()) {
+      return { success: false, error: 'Judul dan isi artikel tidak boleh kosong.' }
+    }
+
+    const { error } = await supabase
+      .from('articles')
+      .update({
+        title: formData.title,
+        category: formData.category,
+        content: formData.content,
+        image_url: formData.image_url,
+        updated_at: new Date().toISOString(),
+      })
+      .eq('id', articleId)
+
+    if (error) throw error
+
+    revalidatePath('/articles')
+    revalidatePath('/')
+    return { success: true }
+  } catch (err: unknown) {
+    console.error('updateArticleAction error:', err)
+    return { success: false, error: err instanceof Error ? err.message : 'Gagal mengupdate artikel' }
+  }
+}
+
+export async function deleteArticleAction(articleId: string): Promise<ActionState> {
+  try {
+    await verifyAdminAuth()
+    const supabase = await createClient()
+
+    const { error } = await supabase.from('articles').delete().eq('id', articleId)
+
+    if (error) throw error
+
+    revalidatePath('/articles')
+    revalidatePath('/')
+    return { success: true }
+  } catch (err: unknown) {
+    console.error('deleteArticleAction error:', err)
+    return { success: false, error: err instanceof Error ? err.message : 'Gagal menghapus artikel' }
+  }
+}
+
